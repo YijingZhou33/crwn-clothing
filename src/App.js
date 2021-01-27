@@ -5,6 +5,7 @@ import "./App.css";
 
 import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
+import Header from "./components/header/header.component";
 
 /* 
     Parameters of Route component:
@@ -26,11 +27,15 @@ import ShopPage from "./pages/shop/shop.component";
           e.g. MenuItem is a function which takes props to render component 
           
           power up component with props: location, match and history
+
+      Place <Header /> outside of <Switch>
+      Header will always present
 */
 
 function App() {
   return (
     <div>
+      <Header />
       <Switch>
         <Route exact path='/' component={HomePage} />
         <Route exact path='/shop' component={ShopPage} />
