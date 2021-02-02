@@ -7,7 +7,10 @@ import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import Header from "./components/header/header.component";
-import { auth } from "./components/firebase/firebase.utils";
+import {
+  auth,
+  createUserProfileDocument,
+} from "./components/firebase/firebase.utils";
 
 /* 
     Parameters of Route component:
@@ -50,6 +53,37 @@ import { auth } from "./components/firebase/firebase.utils";
       it will send out the message that Auth status has changed 
 
       Also needs to close it on unmount in case of memory leaks
+
+    How to store authenticated user into database?
+      make async call to make API request to get back from Auth library
+
+      Useful properties of userAuth object:
+        1. displayName
+        2. email
+        3. uid - dynamically generated ID string 
+
+      Put userAuth properties into users collection inside database
+    
+    Also store the data in the "state" of the application to be used
+      use userAuth to check if the database has updated   
+      
+      userRef.onSnapshot()
+      It will send a snapshot object representing the data that is currently 
+      stored in the database.
+
+      If a user signs in we'll check if they're actually signed in with `userAuth`
+        If there is we will get back userRef from `createUserProfileDocument` method
+          If there is a document we will get back the userRef
+          If there is no document we will create a new document and still get back the userRef
+        
+        Then listen to userRef for any changes to data
+        But will also get back the first state of data
+        use data to `setState`
+      
+      If user signed out, set currentUser to Null.
+
+    setState is asynchronous
+      We pass a second function as a parameter in setState 
 */
 
 class App extends React.Component {
@@ -63,9 +97,20 @@ class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged((user) => {
-      this.setState({ currentUser: user });
-      console.log(user);
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+        userRef.onSnapshot((snapShot) => {
+          this.setState({
+            currentUser: {
+              id: snapShot.id,
+              ...snapShot.data(),
+            },
+          });
+        });
+      } else {
+        this.setState({ currentUser: userAuth });
+      }
     });
   }
 
