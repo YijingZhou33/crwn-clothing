@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
 
 import { auth } from "../../components/firebase/firebase.utils";
 
@@ -9,6 +10,19 @@ import "./header.styles.scss";
 
 /* 
     SVG - Scalable vactor graphics
+
+    bring userReducer as currentUser into Header Component which gets currentUser from App.js
+    Header Component needs to pull currentUser from userReducer 
+
+    connect is a higher-order component which meodifies component related to Redux
+    
+    higher-order component is a component that takes components as arguments and 
+    return a souped up component 
+      first function (mapStateToProps) - access the state of rootReducer --> the currentUser value
+      second function - component 
+      get null as currentUser and being passed in -- sign out
+
+      mapStateToProps will be used anythere we need the property of the state
 */
 
 const Header = ({ currentUser }) => (
@@ -40,4 +54,8 @@ const Header = ({ currentUser }) => (
   </div>
 );
 
-export default Header;
+const mapStateToProps = (state) => ({
+  currentUser: state.user.currentUser,
+});
+
+export default connect(mapStateToProps)(Header);
