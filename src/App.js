@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 
 import "./App.css";
@@ -12,15 +12,17 @@ import {
   auth,
   createUserProfileDocument,
 } from "./components/firebase/firebase.utils";
+// import action creater
 import { setCurrentUser } from "./redux/user/user.actions";
 
 /* 
+  -------------------- Route --------------------  
     Parameters of Route component:
       1. exact - {true / false} - true: exactly the path 
       2. path - sub url from current page (https://localhost:3000)
       3. component - render 
 
-    Switch
+    <Switch>
       <Route> inside find a match, it only renders the exact route. [exclusively]
 
     Only have access to first component passed to Route - HomePage
@@ -38,6 +40,19 @@ import { setCurrentUser } from "./redux/user/user.actions";
       Place <Header /> outside of <Switch>
       Header will always present
 
+    <Route render> method
+      Instead of having a new React element created using
+      `component` prop, pass in a function to be called 
+      when the location mathces.  
+
+    <Redirect> 
+      Navigate to a new location.
+
+      <Route exact path="/">
+        {loggedIn ? <Redirect to="/dashboard" />: <PublicHomePage>}
+      </Route>
+
+    -------------------- Firebase --------------------    
     Firebase Auth - persistent session
       Normally how to fetch the data inside of the App is to fire a fetch 
       to the backend inside componentDidMount()
@@ -98,6 +113,8 @@ import { setCurrentUser } from "./redux/user/user.actions";
                       needs to be passed to every Reducer 
 
     Redux-logger: the state of Redux after any action gets fired 
+
+    -------------------- Redirect --------------------
 */
 
 class App extends React.Component {
@@ -144,15 +161,51 @@ class App extends React.Component {
         <Switch>
           <Route exact path='/' component={HomePage} />
           <Route exact path='/shop' component={ShopPage} />
-          <Route exact path='/signin' component={SignInAndSignUpPage} />
+          <Route
+            exact
+            path='/signin'
+            render={() =>
+              this.props.currentUser ? (
+                <Redirect to='/' />
+              ) : (
+                <SignInAndSignUpPage />
+              )
+            }
+          />
         </Switch>
       </div>
     );
   }
 }
 
+/* 
+  If there's a current user in the application, the user shouldn't
+  access the sign-in page.
+
+  Get `currentUser` from the Redux store
+  
+  `mapStateToProps`
+  It is used for selecting the part of the data from the store that
+  the connected component needs. 
+  The result is a plain object, 
+  which will be merged into the wrapped component's props. 
+*/
+const mapStateToProps = ({ user }) => ({
+  currentUser: user.currentUser,
+});
+
+/* 
+  `mapDispatchToProps` function returns a plain object:
+    field: becomes a seperate prop for component
+    value: a function that dispatches an aciton when called
+
+  Action object created by `actionCreator()` passing in `dispatch()`
+  this object will be passed to every reducer 
+*/
+
+// dispatching actions returned by action creator (user.actions.js)
 const mapDispatchToProps = (dispatch) => ({
   setCurrentUser: (user) => dispatch(setCurrentUser(user)),
 });
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

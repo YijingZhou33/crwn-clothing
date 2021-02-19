@@ -1,6 +1,6 @@
 /* 
     Store the state of current users
-    Reducer is a function with two props 
+    Reducer is a function with two props - similar to event listener
       1. `state` object - current state
       2. `action` object
         {
@@ -26,18 +26,24 @@
     bring this into root reducer
 */
 
+import { UserActionTypes } from "./user.types";
+
 const INITIAL_STATE = {
   currentUser: null,
 };
 
 const userReducer = (state = INITIAL_STATE, action) => {
+  // Check to see if the reducer cares about this action
   switch (action.type) {
-    case "SET_CURRENT_USER":
+    case UserActionTypes.SET_CURRENT_USER:
+      // If so, make a copy of `state`
       return {
         ...state,
+        // Update the copy
         currentUser: action.payload,
       };
     default:
+      // Otherwise return the existing state unchanged
       return state;
   }
 };

@@ -1,4 +1,5 @@
 /* 
+    Action creator - function
     implement right actions to app 
     so Redux can store value of user into userReducer 
 
@@ -6,11 +7,16 @@
     inside switch statement and set currentUser inside userReducer as payload object 
     return objects 
 
+    name type string like this: `domain/eventName`
+
     user: userAuth in App.js
 
 */
 
+import { UserActionTypes } from "./user.types";
+
+// action creator
 export const setCurrentUser = (user) => ({
-  type: "SET_CURRENT_USER",
+  type: UserActionTypes.SET_CURRENT_USER,
   payload: user,
 });
