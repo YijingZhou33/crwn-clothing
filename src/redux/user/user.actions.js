@@ -13,7 +13,7 @@
 
 */
 
-import { UserActionTypes } from "./user.types";
+import UserActionTypes from "./user.types";
 
 // action creator
 export const setCurrentUser = (user) => ({
