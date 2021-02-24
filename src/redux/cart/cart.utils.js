@@ -5,7 +5,7 @@
   Look inside the existing items to see if it exists 
   
   array.find() will return the first elemnt found based off the
-  condition passed in, return True or undefined
+  condition passed in, if not found, return undefined
 
   array.map() will return a new array
 */
