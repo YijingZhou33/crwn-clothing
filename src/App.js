@@ -196,7 +196,7 @@ const mapStateToProps = ({ user }) => ({
 
 /* 
   `mapDispatchToProps` function returns a plain object:
-    field: becomes a seperate prop for component
+    field: becomes a saperate prop for component
     value: a function that dispatches an aciton when called
 
   Action object created by `actionCreator()` passing in `dispatch()`
