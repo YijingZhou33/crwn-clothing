@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
 
 import { toggleCartHidden } from "../../redux/cart/cart.actions";
 
@@ -30,25 +31,36 @@ const CartIcon = ({ toggleCartHidden, itemCount }) => (
 
   Whenever any reducer updates, it will always return a new object,
   Redux re-composes and re-bulids the entire state objects.
-  `mapStateToProps` gets called every single time and passes in new props into 
-  component. This is always re-rendering components. 
+  
+  `mapStateToProps` has a shallow equality check for every value in the object,
+    shallow equality check:
+      primitive value - two values are equal?
+      object value - reference not the value inside
 
-  For example, if we sign in, it still changes the entire state, 
-  even though cart icon only cares about cartItem, it sill re-renders. 
-
-  Store the value the selector is using, if the cartItems doesn't change, 
-  we don't want to re-render the cartIcon component.
+  Since `itemCount` prop is a primitive value, if they're the same, 
+  no new props will be passed into `cartIcon` component.
+  
+  Thus, `cartIcon` will not rerender if unrelated redux state 
+  like `currrentUser` changes occur. 
 
   Memorization: the caching of the selectors value
   `Reselect` library - it won't pass the same prop value into component, 
                         React component won't re-render
 
+  Even BEFORE reselect, changes to unrelated redux state will NOT
+  re-render `CartIcon` since `itemCount` is a primitive value.
+  However, if a selector were creating new objects/arrays, 
+  it will help prevent unnecessary re-renders.
+
+  In this scenario, reselect only helped with unnecessary computations
+  from array.reduce function since `CartItems` passed in didn't change.
+
   Move this into `cart.selectors.js`
   It needs to pass the whole state:
     selectCartItemsCount --> selectCartItems --> selectCart --> state
 */
-const mapStateToProps = (state) => ({
-  itemCount: selectCartItemsCount(state),
+const mapStateToProps = createStructuredSelector({
+  itemCount: selectCartItemsCount,
 });
 
 // merge `toggleCarHidden` props to Redux state
