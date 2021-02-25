@@ -4,7 +4,7 @@
 */
 
 import CartActionTypes from "./cart.types";
-import { addItemToCart } from "./cart.utils";
+import { addItemToCart, removeItemFromCart } from "./cart.utils";
 
 // hide the dropdown when the app renders for the first time
 /* 
@@ -23,6 +23,9 @@ import { addItemToCart } from "./cart.utils";
   Group the cartItem - add quantity property to the object 
   write a utils function to return a new array even if the object
   stays the same but increases or decreases the prop. 
+
+  dispatch a new action based on the payload to clear an cartItem 
+  regardless of its quantity whenever we hit th remove button
 */
 const INITIAL_STATE = {
   hidden: true,
@@ -41,6 +44,18 @@ const cartReducer = (state = INITIAL_STATE, action) => {
         ...state,
         cartItems: addItemToCart(state.cartItems, action.payload),
         // cartItems: [...state.cartItems, action.payload],
+      };
+    case CartActionTypes.REMOVE_ITEM:
+      return {
+        ...state,
+        cartItems: removeItemFromCart(state.cartItems, action.payload),
+      };
+    case CartActionTypes.CLEAR_ITEM_FROM_CART:
+      return {
+        ...state,
+        cartItems: state.cartItems.filter(
+          (cartItem) => cartItem.id !== action.payload.id
+        ),
       };
     default:
       return state;

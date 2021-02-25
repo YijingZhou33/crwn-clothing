@@ -24,3 +24,23 @@ export const addItemToCart = (cartItems, cartItemToAdd) => {
 
   return [...cartItems, { ...cartItemToAdd, quantity: 1 }];
 };
+
+/* 
+  Check if the quantity is one so we can remove it,
+  Otherwise decrease the quantity by one
+*/
+export const removeItemFromCart = (cartItems, cartItemToRemove) => {
+  const existingCartItem = cartItems.find(
+    (cartItem) => cartItem.id === cartItemToRemove.id
+  );
+
+  if (existingCartItem.quantity === 1) {
+    return cartItems.filter((cartItem) => cartItem.id !== existingCartItem.id);
+  }
+
+  return cartItems.map((cartItem) =>
+    cartItem.id === cartItemToRemove.id
+      ? { ...cartItem, quantity: cartItem.quantity - 1 }
+      : cartItem
+  );
+};
