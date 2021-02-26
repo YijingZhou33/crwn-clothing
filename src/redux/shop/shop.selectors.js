@@ -63,7 +63,7 @@ export const selectCollectionsForPreview = createSelector(
   If we have a collections with thousand items and we're looking for the last one,
   it takes too long to loop through all the elements
 
-  Data normalization: Store lists of elements inside an object
+  Data normalization: Store lists of elements inside an object (hash table)
   set the key as the `Urlparam` and the key itself should exist inside the 
   item, usually it would be id
 
