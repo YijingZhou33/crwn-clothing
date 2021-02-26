@@ -12,6 +12,7 @@ import "./collection-preview.styles.scss";
 
     instead of spreading the props of item, 
     we need to pass in the whole item
+
 */
 
 const CollectionPreview = ({ title, items }) => (
