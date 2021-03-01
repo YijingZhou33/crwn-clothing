@@ -72,6 +72,11 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
   const userRef = firestore.doc(`users/${userAuth.uid}`);
   const snapShot = await userRef.get();
+
+  // const collectionRef = firestore.collection(`users`);
+  // const collectionSnapshot = await collectionRef.get();
+  // console.log({ collection: collectionSnapshot.docs.map((doc) => doc.data()) });
+
   if (!snapShot.exists) {
     const { displayName, email } = userAuth;
     const createAt = new Date();
@@ -87,8 +92,78 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
       console.log("error creating user", error.message);
     }
   }
-
   return userRef;
+};
+
+/* 
+  If we start adding documents into the collection that doesn't exist,
+  Firebase will create collection and documents inside it.
+
+  Call this function where we have access to SHOP_DATA --> App.js
+  After running it once, we need to remove it since we only 
+  want to add data automatically. 
+
+  use `documentRef.set()` to add data into documentations
+  We can only make one set call at a time, if the Interent stops
+  halfway through, we'll have saved half those documents.
+
+  If any of them fail, we want the whole function to fail,
+  so the code is consistent. 
+  
+  `firestore.batcu()`
+  Batch all calls into one request 
+
+  `Array.forEach()` is similar to `Array.map()`, but it won't
+  return a new array. 
+  
+  `collectionRef.doc()` returns a new document reference in this collection
+  and randomly generate ID 
+
+  `batch.commit()` returns a promise:
+    when it succeeds, it will return a void (null) value.
+*/
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
+  // set Firbase Collections name to `collections`
+  const collectionRef = firestore.collection(collectionKey);
+
+  const batch = firestore.batch();
+  objectsToAdd.forEach((obj) => {
+    const newDocRef = collectionRef.doc();
+    batch.set(newDocRef, obj);
+  });
+
+  return await batch.commit();
+};
+
+/* 
+  convert documentSnapshot object (snapshot.docs() --> array) into map
+  add `routeName` prop
+
+  transformedCollection = [{routeName, id, title, items}, {}, ...]
+
+  `encodeURI`: pass in string that can't be read by URI and reformat it 
+
+  `reduce()` will return map: {hats: {}, ...} 
+*/
+export const convertCollectionsSnapshotToMap = (collectionsSnapshot) => {
+  const transformedCollection = collectionsSnapshot.docs.map((docSnapshot) => {
+    const { title, items } = docSnapshot.data();
+
+    return {
+      routeName: encodeURI(title.toLowerCase()),
+      id: docSnapshot.id,
+      title,
+      items,
+    };
+  });
+
+  return transformedCollection.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator;
+  }, {});
 };
 
 firebase.initializeApp(config);

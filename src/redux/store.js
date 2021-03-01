@@ -18,6 +18,11 @@
     use `presistor` to create a persisting version of store
 
   Only apply `logger` when we in development
+  Inside Node, there's an enviromnment variable, 
+  it can be set to know whether we're in production or development 
+
+  yarn start -- development
+  yarn build (heroku) -- production
 */
 
 import { createStore, applyMiddleware } from "redux";

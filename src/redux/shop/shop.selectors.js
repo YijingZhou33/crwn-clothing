@@ -34,10 +34,12 @@ export const selectCollections = createSelector(
   `Object.keys()` will get all the keys and put into an array
   const testObject = {'a': 1, 'b': 2, 'c': 3}
   Object.keys(testObject) // ['a', 'b', 'c']
+  return [{id, title, routeName, items:[]}, {}, {}, {}, {}]
 */
 export const selectCollectionsForPreview = createSelector(
   [selectCollections],
-  (collections) => Object.keys(collections).map((key) => collections[key])
+  (collections) =>
+    collections ? Object.keys(collections).map((key) => collections[key]) : []
 );
 
 /* 
@@ -75,6 +77,6 @@ export const selectCollection = memoize((collectionUrlParam) =>
     // (collections) => collections.find(
     //   (collection) => collection.id === COLLECTION_ID_MAP[collectionUrlParam]
     // )
-    (collections) => collections[collectionUrlParam]
+    (collections) => (collections ? collections[collectionUrlParam] : null)
   )
 );

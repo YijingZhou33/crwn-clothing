@@ -15,11 +15,13 @@ import Header from "./components/header/header.component";
 import {
   auth,
   createUserProfileDocument,
-} from "./components/firebase/firebase.utils";
+  // addCollectionAndDocuments,
+} from "./firebase/firebase.utils";
 
 // import action creater
 import { setCurrentUser } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
+// import { selectCollectionsForPreview } from "./redux/shop/shop.selectors";
 
 /* 
   -------------------- Route --------------------  
@@ -94,6 +96,9 @@ import { selectCurrentUser } from "./redux/user/user.selectors";
       It will send a snapshot object representing the data that is currently 
       stored in the database.
 
+      `setCurrentUser` actionCreator method to set `currentUser` object
+      in the current Redux state
+
       If a user signs in we'll check if they're actually signed in with `userAuth`
         If there is we will get back userRef from `createUserProfileDocument` method
           If there is a document we will get back the userRef
@@ -132,7 +137,36 @@ class App extends React.Component {
   // }
   unsubscribeFromAuth = null;
 
+  /* 
+    -------------------- Observer Pattern --------------------
+      Function that get passed into `onAuthStateChanged` is `next` call in
+      the observer
+        Whenever a value comes in, we run the function 
+        we can also add `error` call, but `complete` call rarely happens 
+        in the firebase because it is a live database, meaning that updates
+        can always happen
+      
+      `AuthStateChange` is the stream of events, firebase sends the user
+      login or logout information in a continuous stream. 
+
+      Why we set unsubscribe?
+        Technically speaking, subscription never ends because this stream is 
+        always open. And the listener `auth.onAuthStateChanged` always listens 
+        to the event. 
+        If the component unmounts, we don't care about the listener anymore, 
+        we have to unsubscribe from it. 
+        
+        Firebase allows us to get back and unsubscribe -- eliminate the listener
+        It destorys the subscription reference and the observable continues
+
+      Observable can have multiple observers 
+
+    -------------------- Promise Pattern --------------------
+    `shop.component.jsx`
+*/
+
   componentDidMount() {
+    // const { setCurrentUser, collectionsArray } = this.props;
     const { setCurrentUser } = this.props;
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
       if (userAuth) {
@@ -152,6 +186,11 @@ class App extends React.Component {
       } else {
         // this.setState({currentuser: userAuth});
         setCurrentUser(userAuth);
+        // addCollectionAndDocuments(
+        //   "collections",
+        //   // returns {title, items:[]}
+        //   collectionsArray.map(({ title, items }) => ({ title, items }))
+        // );
       }
     });
   }
@@ -199,6 +238,7 @@ class App extends React.Component {
 */
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
+  // collectionsArray: selectCollectionsForPreview,
 });
 
 /* 
