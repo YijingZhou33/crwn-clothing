@@ -43,12 +43,12 @@ import {
 
 const Header = ({ currentUser, hidden }) => (
   <HeaderContainer>
-    <LogoContainer to='/'>
+    <LogoContainer to='/crwn-clothing/'>
       <Logo className='logo'></Logo>
     </LogoContainer>
     <OptionsContainer>
-      <OptionLink to='/shop'>SHOP</OptionLink>
-      <OptionLink to='/contact'>CONTACT</OptionLink>
+      <OptionLink to='/crwn-clothing/shop'>SHOP</OptionLink>
+      <OptionLink to='/crwn-clothing/contact'>CONTACT</OptionLink>
       {currentUser ? (
         <OptionLink
           as='div'
@@ -58,7 +58,7 @@ const Header = ({ currentUser, hidden }) => (
           SIGN OUT
         </OptionLink>
       ) : (
-        <OptionLink to='/signin'>SIGN IN</OptionLink>
+        <OptionLink to='/crwn-clothing/signin'>SIGN IN</OptionLink>
       )}
       <CartIcon />
     </OptionsContainer>
