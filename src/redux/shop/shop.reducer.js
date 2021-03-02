@@ -1,7 +1,21 @@
 import ShopActionTypes from "./shop.types";
 
+/* 
+  `isFetching`: whether or not we're fetching 
+    the data for collections prop 
+  `errorMessage`: store the error message
+
+  Prior we had `loading` value inisde shoppage
+  because the component was doing the API call
+
+  Move it into Redux so the reducer needs to add the state
+  to indicate whether the data is fetching related to the 
+  shop reducer. 
+*/
 const INITIAL_STATE = {
   collections: null,
+  isFetching: false,
+  errorMessage: undefined,
 };
 
 /* 
@@ -38,11 +52,28 @@ const INITIAL_STATE = {
 
 const shopReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case ShopActionTypes.UPDATE_COLLECTIONS:
+    case ShopActionTypes.FETCH_COLLECTIONS_START:
       return {
         ...state,
+        isFetching: true,
+      };
+    case ShopActionTypes.FETCH_COLLECTIONS_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
         collections: action.payload,
       };
+    case ShopActionTypes.FETCH_COLLECTIONS_FAILURE:
+      return {
+        ...state,
+        isFetching: false,
+        errorMessage: action.payload,
+      };
+    // case ShopActionTypes.UPDATE_COLLECTIONS:
+    //   return {
+    //     ...state,
+    //     collections: action.payload,
+    //   };
     default:
       return state;
   }

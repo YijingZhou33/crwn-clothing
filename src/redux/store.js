@@ -23,16 +23,22 @@
 
   yarn start -- development
   yarn build (heroku) -- production
+
+  Redux-thunk -- middleware 
+  It will catch the action and detect actions that aren't objects (should be functions),
+  then take dispatch function as a parameter and keep going 
+  for exmaple, giving asynchronous action objects to the route reducer 
 */
 
 import { createStore, applyMiddleware } from "redux";
 import { persistStore } from "redux-persist";
 import logger from "redux-logger";
+import thunk from "redux-thunk";
 
 import rootReducer from "./root-reducer";
 
 // const middlewares = [logger];
-const middlewares = [];
+const middlewares = [thunk];
 
 if (process.env.NODE_ENV === "development") {
   middlewares.push(logger);

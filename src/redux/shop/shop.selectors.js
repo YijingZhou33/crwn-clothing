@@ -80,3 +80,15 @@ export const selectCollection = memoize((collectionUrlParam) =>
     (collections) => (collections ? collections[collectionUrlParam] : null)
   )
 );
+
+export const selectIsCollectionFetching = createSelector(
+  [selectShop],
+  (shop) => shop.isFetching
+);
+
+// convert an object into boolean
+// if collections is loaded, return true
+export const selectCollectionsLoaded = createSelector(
+  [selectCollections],
+  (collections) => !!collections
+);
